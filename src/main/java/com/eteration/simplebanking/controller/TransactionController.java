@@ -35,8 +35,13 @@ public class TransactionController {
 
     @PostMapping("billPayment")
     public ResponseEntity<TransactionStatus> billPayment(@RequestBody BillPaymentTransactionRequest request) {
-        BillPaymentTransaction transaction = new BillPaymentTransaction(request.billType, request.amount);
-        return processTransaction(request.accountNumber, transaction);
+        try {
+            BillPaymentTransaction transaction = new BillPaymentTransaction(request.billType, request.amount);
+            return processTransaction(request.accountNumber, transaction);
+        }
+        catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     private ResponseEntity<TransactionStatus> processTransaction(String accountNumber, Transaction transaction) {

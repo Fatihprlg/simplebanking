@@ -16,20 +16,23 @@ import javax.persistence.Entity;
 public class BillPaymentTransaction extends Transaction {
     private BillTypes billType;
 
-    public BillPaymentTransaction(BillTypes type, double amount){
+    public BillPaymentTransaction(BillTypes type, double amount) throws IllegalArgumentException {
         super(amount);
-        this.billType = type;
+        try{
+            this.billType = BillTypes.valueOf(type.name()); // check isValid
+        }
+        catch(IllegalArgumentException e){
+            throw new IllegalArgumentException("Bill type is not supported");
+        }
         this.type = billType.name() + "_" + this.getClass().getSimpleName();
     }
 
     @Override
     public TransactionStatus apply(Account account) {
-
         try {
-            BillTypes.valueOf(billType.name()); // check isValid
             this.account = account;
             account.debit(amount);
-        } catch (InsufficientBalanceException | IllegalArgumentException e) {
+        } catch (InsufficientBalanceException e) {
             status = new TransactionStatus(Status.FAIL, e.getMessage());
             return status;
         }
