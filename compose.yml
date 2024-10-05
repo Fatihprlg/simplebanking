@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  app:
+    image: simplebanking:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/simplebanking_db
+      - SPRING_DATASOURCE_USERNAME=fatih
+      - SPRING_DATASOURCE_PASSWORD=pwd1234
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: simplebanking_db
+      POSTGRES_USER: fatih
+      POSTGRES_PASSWORD: pwd1234
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
